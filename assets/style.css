@@ -1,0 +1,44 @@
+.header-style {
+    height: 150px;
+    width: auto;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+}
+
+.header-text{
+    font-size: 50px;
+    font-weight: 700;
+    color: white;
+}
+
+/* #city-search-container{
+    background-color: red;
+} */
+
+/* #main-container{
+    background-color: blue;
+} */
+
+.main-header-text{
+    font-size: 35px;
+    font-weight: 700;
+    color: black;
+}
+
+.search-width{
+    width: 70%;
+    margin-bottom: 20px;
+}
+
+#search-input{
+    height: 60px;
+    font-size: 18px;
+}
+
+#search-button{
+    height: 45px;
+    background-color:rgb(0, 162, 255);
+    color:white;
+    font-weight: bold;
+    font-size: 18px;
+}
