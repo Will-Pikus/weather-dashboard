@@ -6,27 +6,32 @@ var tfWind = document.querySelector('#tf-wind')
 var tfHumid = document.querySelector('#tf-humid')
 var tfUV = document.querySelector('#tf-uv')
 var fdfContainer = document.querySelector('#fdf-row')
+var historyContainer = document.querySelector('#history-container')
+
+var cityArray = []
 
 function handleClick(){
+  while (fdfContainer.hasChildNodes()) {  
+    fdfContainer.removeChild(fdfContainer.firstChild);
+  }
   getApi()
 }
 
-// populating todays forecast
-function populateTData(data){
-  var iconCode = data.weather[0].icon
-  var iconURL = "http://openweathermap.org/img/w/" + iconCode + ".png"
+// populating waether data
+function populateData(data){
+  // var iconCode = data.weather[0].icon
+  // var iconURL = "http://openweathermap.org/img/w/" + iconCode + ".png"
+  var cityName = data.city.name
 
-  cityHeaderText.textContent = data.name
-  tfTemp.textContent = "Temp: " + data.main.temp + " °F"
-  tfWind.textContent = "Wind: " + data.wind.speed + " MPH"
-  tfHumid.textContent = "Humidity: " + data.main.humidity + "%"
-  tfUV.textContent = "UV Index: " + data.name
+  // populating todays forecast
+  cityHeaderText.textContent = data.city.name +" ("+ moment().format("l")+")"
+  tfTemp.textContent = "Temp: " + data.list[0].main.temp + " °F"
+  tfWind.textContent = "Wind: " + data.list[0].wind.speed + " MPH"
+  tfHumid.textContent = "Humidity: " + data.list[0].main.humidity + "%"
+  tfUV.textContent = "UV Index: " 
 
-}
-
-// populating 5 day forecast dynamically
-function populateFDFData(data){
-  for (var i=0; i<5; i++){
+  // populating 5 day forecast dynamically
+  for (var i=1; i<6; i++){
     var fdfCard = document.createElement('div')
     fdfCard.classList.add("fdf-card")
     fdfContainer.appendChild(fdfCard)
@@ -34,7 +39,7 @@ function populateFDFData(data){
     // append header
     var fdfCardHeader = document.createElement('h1')
     fdfCardHeader.classList.add("fdf-card-header")
-    fdfCardHeader.textContent = data.list[i].dt_text
+    fdfCardHeader.textContent = moment().add(i,'days').format("l")
     fdfCard.appendChild(fdfCardHeader)
 
     // append temp
@@ -55,37 +60,47 @@ function populateFDFData(data){
     fdfCardP3.textContent = "Humidity: " + data.list[i].main.humidity + " %"
     fdfCard.appendChild(fdfCardP3)
   }
+
+  // append city to local storage
+  cityArray.push(cityName)
+  localStorage.setItem("cities",cityArray)
+  populateSearchHistory(cityName)
+}
+
+function populateSearchHistory(cityName){
+  // get local storage object
+  var localObj = localStorage.getItem("cities")
+  // check if obj exists
+  if (localObj){
+    // iterate through local storage array for length
+    for(i=0; i<localObj.length; i++) {
+      // create el in dom
+      var historyButton = document.createElement('button')
+      historyButton.classList.add("history-button")
+      historyButton.textContent = cityName
+      historyContainer.appendChild(historyButton)
+    }
+  }
+  else{
+
+  }
 }
 
 function getApi() {
   var city = searchInput.value.trim()
-  var tweatherRequest = 'https://api.openweathermap.org/data/2.5/weather?q='+city+'&units=imperial&appid=2a167aaa264850a68c45161b71185b00'
-  var fdfweatherReqest = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+'&units=imperial&appid=2a167aaa264850a68c45161b71185b00'
-
-  //Fetch current weather forecast
-  fetch(tweatherRequest)
-    .then(function (response) {
-      console.log(response.status);
-      return response.json();
-    })
-    .then(function (data) {
-      console.log(data);
-      populateTData(data)
-    });
+  var weatherReqest = 'https://api.openweathermap.org/data/2.5/forecast?q='+city+'&units=imperial&appid=2a167aaa264850a68c45161b71185b00'
 
   //Fetch 5day forecast
-  fetch(fdfweatherReqest)
+  fetch(weatherReqest)
     .then(function (response) {
       console.log(response.status);
       return response.json();
     })
     .then(function (data) {
       console.log(data);
-      populateFDFData(data);
+      populateData(data);
     });
 }
 
-
-    
-
+  populateSearchHistory()
   searchBtn.addEventListener('click', handleClick)
